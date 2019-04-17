@@ -1,5 +1,5 @@
 # S3J3_database
-## Scrapping and date base
+## Scrapping and data base
 Carolina Ferreira
 ## Exercise 1
 Townhall names and emails into a Json file.
