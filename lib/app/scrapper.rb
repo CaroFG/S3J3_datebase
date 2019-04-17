@@ -1,5 +1,5 @@
 require 'google_drive'
-
+require 'csv'
 
 
 class Scrapper
@@ -48,24 +48,39 @@ class Scrapper
 	end
 
 	def save_as_json
+		# On cŕee un nouvel hash vide 
+		new_cities_mails = Hash.new
+		# On parcourt notre array de hash
+		@global_array_cities_mails.each do |hash|
+		# Pour chaque hash de l'array on récupère la clé et la valeur
+			hash.each do |city, mail|
+		#On les stocke dans notre hash vide
+				new_cities_mails[city] = mail
+			end
+		end
+		# On ouvre le fichier .json  avec les droits en write
 		File.open("db/emails.json","w") do |f|
-			f.write(JSON.pretty_generate(@global_array_cities_mails))
+			# f c'est peut-être le nom du fichier, dans ce fichier f on écrit le contenu du hash
+			f.write(JSON.pretty_generate(new_cities_mails))
 		end
 	end
 
 	def save_as_spreadsheet
+		# Dans config.jason on a nos clés API
 		session = GoogleDrive::Session.from_config("config.json")
+		# ws est notre worksheet google
 			ws = session.spreadsheet_by_key("1814thnpoaiBA4FiqZ-rtWEDHNVvbFL_Jhq_NNrsT1IM").worksheets[0]
-
+			#ligne 1 colonne 1
 			ws[1, 1] = "VILLES"
+			#ligne 1 colonne 2
 			ws[1, 2] = "E-MAILS"
 			
 		
 			i = 0
-		@global_array_cities_mails.each do |hash|   # this is an array of arrays of hashes
-	     hash.each do |ville, email|
-					 ws[i + 2, 1] = ville
-					 ws[i + 2, 2] = email
+		@global_array_cities_mails.each do |hash|   # This is an array of arrays of hashes
+	     hash.each do |ville, email| # Pour chaque hash on parcourt la clé et la valeur
+					 ws[i + 2, 1] = ville # On incrémente la ligne et on stocke la ville dans chaque ligne de la colonne 1
+					 ws[i + 2, 2] = email # On incrémente la ligne et on stocke l'email dans chaque ligne de la colonne 2
 				end
 				i += 1
 		end  
@@ -73,6 +88,19 @@ class Scrapper
 			ws.save
 			ws.reload
 	end
+
+	def save_as_csv
+		CSV.open("db/emails.csv", "w") do |csv|
+			i = 1
+				@global_array_cities_mails.each do |hash|   # This is an array of arrays of hashes
+	     		hash.each do |ville, email| # On parcourt la clé et la valeur de chaque hash
+					 	csv << [i, ville, email] # Les virgules séparent les colonnes
+					 end
+					 i += 1
+				end
+		end
+	end
+
 
 	# On execute le tout via une methode perform
 	def perform
@@ -87,8 +115,9 @@ class Scrapper
 		# donc on en met juste une pour le test avec rspec, qui se situe
 		# en dehors des methodes
 		$test_global_array_cities_mails = @global_array_cities_mails
-		#save_as_json
-		save_as_spreadsheet
+		save_as_json
+		#save_as_spreadsheet
+		#save_as_csv
 	end
 
 end
