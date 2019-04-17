@@ -1,9 +1,6 @@
-require 'rubygems'
-require 'nokogiri'
-require 'open-uri'
-require 'pry'
-require 'json'
-require 'pp'
+require 'google_drive'
+
+
 
 class Scrapper
 # On scrap les noms des villes et les liens de leurs pages sur la liste,
@@ -56,6 +53,27 @@ class Scrapper
 		end
 	end
 
+	def save_as_spreadsheet
+		session = GoogleDrive::Session.from_config("config.json")
+			ws = session.spreadsheet_by_key("1814thnpoaiBA4FiqZ-rtWEDHNVvbFL_Jhq_NNrsT1IM").worksheets[0]
+
+			ws[1, 1] = "VILLES"
+			ws[1, 2] = "E-MAILS"
+			
+		
+			i = 0
+		@global_array_cities_mails.each do |hash|   # this is an array of arrays of hashes
+	     hash.each do |ville, email|
+					 ws[i + 2, 1] = ville
+					 ws[i + 2, 2] = email
+				end
+				i += 1
+		end  
+
+			ws.save
+			ws.reload
+	end
+
 	# On execute le tout via une methode perform
 	def perform
 		hash_cities_urls
@@ -69,7 +87,8 @@ class Scrapper
 		# donc on en met juste une pour le test avec rspec, qui se situe
 		# en dehors des methodes
 		$test_global_array_cities_mails = @global_array_cities_mails
-		save_as_json
+		#save_as_json
+		save_as_spreadsheet
 	end
 
 end
