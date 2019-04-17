@@ -1,10 +1,9 @@
-# 
-## Project details
-Group : XXX
-Good bad joke of the day (from [Randomize](https://random-ize.com/bad-jokes/))
-xxxxxxxx
-xxxxxxxx 🎉
+# S3J3_database
+## Scrapping and date base
+Carolina Ferreira
 ## Exercise 1
-Quick explanation
+Townhall names and emails into a Json file.
 ## Exercise 2
-Quick explanation
+Townhall names and emails into a Google spreadsheet, with google API key.
+## Exercise 3
+Townhall names and emails into a CSV file.
